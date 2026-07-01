@@ -63,9 +63,7 @@ export default function Hero({}: HeroProps) {
           {/* Right column — hero image */}
           <div className="flex-1 flex justify-center md:justify-end">
             <div
-              className="relative w-full max-w-[480px] mx-auto md:mx-0"
-              style={{ filter: 'drop-shadow(0px 16px 48px rgba(26, 115, 232, 0.12))' }}
-            >
+              className="relative w-full max-w-[480px] mx-auto md:mx-0" >
               <Image
                 src="/images/hero-image.png"
                 alt="MyPrint order tracking dashboard preview"
