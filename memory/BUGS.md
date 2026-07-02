@@ -33,3 +33,12 @@
 **Root cause:** Wrote TypeScript config file following Next.js 15 conventions; our pinned version is 14.2.5.
 **Fix:** Deleted `next.config.ts`, created `next.config.mjs` with JSDoc type annotation.
 **Lesson:** Check the Next.js version before using version-specific features. next.config.ts = Next.js 15+. next.config.mjs or next.config.js = Next.js 14.
+
+---
+
+## Bug 4 — Empty Supabase env vars 500 every route via middleware
+**Day:** 2
+**Bug:** With `NEXT_PUBLIC_SUPABASE_URL` / `NEXT_PUBLIC_SUPABASE_ANON_KEY` left empty in `.env.local`, `next dev` throws `Error: Your project's URL and Key are required to create a Supabase client!` inside `lib/supabase/middleware.ts`. Because the root `middleware.ts` matcher covers nearly every route, this 500s the landing page too, not just auth pages.
+**Root cause:** `@supabase/ssr`'s `createServerClient` throws synchronously if the URL/key are falsy, and middleware runs on every request before any page renders — there's no route that can render without a working Supabase client once middleware.ts exists.
+**Fix:** Not yet fixed — requires real Supabase project credentials. `npm run build` still passes because Next.js prerenders nothing that touches middleware at build time (the error only fires at request time). Confirmed via `npm run dev` + `curl localhost:3000/` → 500.
+**Lesson:** Once middleware.ts references the Supabase client, the entire site is hard-down until real env vars are set — this isn't isolated to auth pages. Get credentials before merging middleware.ts, or the landing page breaks along with everything else. `npm run build` succeeding is NOT sufficient proof the app works — it doesn't execute middleware/server-component code paths that only run per-request.

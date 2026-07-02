@@ -32,6 +32,30 @@
 
 ---
 
+## 2026-07-02 — Auth forms use React Hook Form + Zod, not raw useState
+**What:** Login and signup pages use `react-hook-form` with `@hookform/resolvers/zod` for client-side validation, then manually build `FormData` and call the server action on submit.
+**Why:** Master prompt specifies RHF + Zod as the standard form pattern for the whole app. Manual FormData construction (instead of passing the native `<form action={serverAction}>`) was needed because we need client-side Zod validation (inline field errors, password strength, confirm-password match) before hitting the server.
+**Alternatives considered:** Plain `<form action={signIn}>` with no client validation — rejected, spec requires real-time password strength and match indicators which need React state anyway.
+**Impact:** Establishes the pattern for future multi-step forms (order form, vendor registration) in later sessions.
+
+---
+
+## 2026-07-02 — Navbar split into three components for server-fetched auth state
+**What:** `Navbar.tsx` (server, async) fetches the Supabase user + profile and passes plain serializable props to `NavbarClient.tsx` (client, holds hamburger state), which renders `NavbarUserMenu.tsx` (client, dropdown open/close state) when logged in.
+**Why:** The original Day 1 Navbar was a single client component (needed hamburger state). Auth state must be read server-side via cookies, which requires an async Server Component — but Server Components can't hold `useState` for the dropdown/hamburger. Splitting was the only way to get both.
+**Alternatives considered:** Fetching the user client-side via `supabase.auth.getUser()` in a `useEffect` — rejected, causes a flash of logged-out state on every page load.
+**Impact:** Sets the pattern for any future component that needs both server-fetched data and client interactivity.
+
+---
+
+## 2026-07-02 — Shared components/auth/ folder for AuthCard, GoogleButton, PasswordInput
+**What:** Extracted the card shell, Google OAuth button, and password show/hide input into shared components rather than duplicating markup in login and signup pages.
+**Why:** Both pages need byte-identical card styling, an identical Google button, and password fields with the same show/hide behavior (signup needs two: password + confirm password). Session spec explicitly says the Google button is "same as login."
+**Alternatives considered:** Copy-paste per page — rejected as this is exactly the kind of repeated UI the design system calls "the single most-repeated component" pattern; extracting avoids drift between the two pages.
+**Impact:** Any visual change to the auth card/Google button/password field only needs to happen once.
+
+---
+
 ## 2026-07-01 — Footer link colors via inline style
 **What:** Footer text/link colors use `style={{ color: '#9AA0A6' }}` inline instead of `text-text-tertiary` Tailwind class
 **Why:** The dark footer background means Tailwind's `text-text-tertiary` class (which resolves to `#9AA0A6`) should work fine — but the footer background `#1F1F1F` is also applied inline. Used inline style for consistency within the footer component to make the intent explicit.

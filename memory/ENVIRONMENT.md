@@ -15,29 +15,22 @@
 - GitHub remote: NOT YET SET UP — add remote in Day 2 before pushing
 
 ## Vercel
-- Project name: TBD (pending deployment)
-- Preview URL: TBD
-- Production URL: TBD
-- Deployment status: PENDING — user needs to authenticate Vercel CLI
-
-### To deploy (run this in C:\Users\E87304\Desktop\MyPrint):
-```bash
-npx vercel --prod
-```
-The CLI will open a browser for authentication on first run. After auth, it will auto-detect Next.js and deploy. No env vars required for Day 1 (landing page is fully static).
-
-### Alternative (GitHub-first):
-1. Create a new GitHub repo at github.com/new (name: myprint)
-2. `git remote add origin https://github.com/<your-username>/myprint.git`
-3. `git push -u origin master`
-4. Go to vercel.com/new → Import Git Repository → select the repo → Deploy
+- Project name: my-print (org: virtualsinghs-projects)
+- Project ID: prj_GgBAe5DYxcRIfmVuDjsppJE7o3ms
+- `.vercel/project.json` present — CLI is linked
+- GitHub remote connected: https://github.com/VirtualSingh/MyPrint.git
+- Production URL: NEEDS CONFIRMATION from Pushpendra (used as NEXT_PUBLIC_APP_URL and in Supabase redirect URL config)
 
 ## Supabase
-- Project: NOT YET SET UP — Day 2 task
-- Note: No env vars required yet. Day 2 will add:
+- Project: NOT YET SET UP / credentials not yet supplied — BLOCKING Day 2 completion
+- `.env.local` has placeholder (empty) entries for:
   - NEXT_PUBLIC_SUPABASE_URL
   - NEXT_PUBLIC_SUPABASE_ANON_KEY
   - SUPABASE_SERVICE_ROLE_KEY
+  - NEXT_PUBLIC_APP_URL (currently defaulted to http://localhost:3000 — must be overridden with prod URL in Vercel dashboard)
+- Confirmed via local testing: leaving these empty makes `next dev` 500 on every route (see BUGS.md Bug 4) because `middleware.ts` runs on all routes and Supabase's client constructor throws on empty URL/key.
+- Google OAuth provider: NOT YET CONFIRMED enabled in Supabase dashboard
+- `supabase/migrations/0001_users_and_auth_trigger.sql` written but NOT YET RUN — creates public.users table, RLS policies, and the auth.users → public.users trigger
 
 ## Razorpay
 - Mode: TEST (switch to LIVE on Day 9)
